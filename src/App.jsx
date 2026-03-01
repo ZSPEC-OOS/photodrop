@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import logo from './PDlogo.png'
 import { db, storage } from './firebase'
 import {
   collection,
@@ -95,7 +96,7 @@ function Header({ showBack, onBack, onNew }) {
           </button>
         )}
       </div>
-      <h1 className="header-title">PhotoDrop</h1>
+      <img src={logo} alt="PhotoDrop" className="header-logo" />
       <div className="header-right">
         {onNew && (
           <button className="btn-icon" onClick={onNew} aria-label="New folder">

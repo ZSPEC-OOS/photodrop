@@ -22,11 +22,17 @@
   z-index: 100;
 }
 
+.header-logo {
+  height: 30px;
+  object-fit: contain;
+}
+
+/* Fallback text if logo hasn't loaded */
 .header-title {
   font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.3px;
-  color: var(--text);
+  color: var(--primary);
 }
 
 .header-left,
@@ -57,17 +63,17 @@
 .main {
   flex: 1;
   padding: 20px 16px;
-  padding-bottom: max(24px, env(safe-area-inset-bottom));
+  padding-bottom: max(32px, env(safe-area-inset-bottom));
   overflow-y: auto;
 }
 
 .section-label {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 600;
   color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.4px;
-  margin-bottom: 12px;
+  letter-spacing: 0.8px;
+  margin-bottom: 14px;
 }
 
 /* ── Center message (empty / loading) ───────────────────────────────────── */
@@ -83,13 +89,13 @@
 }
 
 .empty-icon { font-size: 56px; line-height: 1; }
-.empty-title { font-size: 22px; font-weight: 700; }
+.empty-title { font-size: 22px; font-weight: 700; color: var(--text); }
 .empty-sub { font-size: 15px; color: var(--text-secondary); }
 
 .spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid var(--border);
+  border: 2px solid var(--border);
   border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
@@ -101,12 +107,12 @@
 .folder-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+  gap: 12px;
 }
 
 .folder-card {
-  background: var(--surface);
-  border: none;
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   cursor: pointer;
@@ -114,15 +120,18 @@
   overflow: hidden;
   text-align: left;
   -webkit-tap-highlight-color: transparent;
-  transition: transform 0.1s;
+  transition: transform 0.12s, border-color 0.12s;
 }
 
-.folder-card:active { transform: scale(0.97); }
+.folder-card:active {
+  transform: scale(0.97);
+  border-color: var(--border-strong);
+}
 
 .folder-thumb {
   width: 100%;
   aspect-ratio: 1;
-  background: var(--bg);
+  background: #0d0d0d;
   position: relative;
   overflow: hidden;
 }
@@ -145,17 +154,19 @@
   position: absolute;
   bottom: 6px;
   right: 8px;
-  background: rgba(0,0,0,0.55);
-  color: #fff;
+  background: rgba(0,0,0,0.7);
+  color: rgba(255,255,255,0.85);
   font-size: 11px;
   font-weight: 600;
   padding: 2px 7px;
   border-radius: 20px;
+  backdrop-filter: blur(4px);
 }
 
 .folder-name {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
+  color: var(--text);
   padding: 10px 12px 12px;
   white-space: nowrap;
   overflow: hidden;
@@ -172,16 +183,16 @@
 .field { display: flex; flex-direction: column; gap: 8px; }
 
 .field-label {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.8px;
 }
 
 .field-input {
-  background: var(--surface);
-  border: 1.5px solid var(--border);
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 14px 16px;
   font-size: 17px;
@@ -192,23 +203,22 @@
   transition: border-color 0.2s;
 }
 
+.field-input::placeholder { color: var(--text-secondary); }
 .field-input:focus { border-color: var(--primary); }
 
 /* ── Photo grid (create + view) ──────────────────────────────────────────── */
 .photo-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
+  gap: 4px;
   margin-bottom: 12px;
 }
 
 .photo-thumb-wrap {
   position: relative;
   aspect-ratio: 1;
-  border-radius: 10px;
   overflow: hidden;
-  cursor: pointer;
-  background: var(--bg);
+  background: var(--card);
 }
 
 .photo-thumb {
@@ -222,7 +232,7 @@
   position: absolute;
   top: 4px;
   right: 4px;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.7);
   color: #fff;
   border: none;
   border-radius: 50%;
@@ -234,6 +244,7 @@
   cursor: pointer;
   padding: 0;
   -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(4px);
 }
 
 /* ── Add photo button ────────────────────────────────────────────────────── */
@@ -242,19 +253,20 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: var(--surface);
-  border: 1.5px dashed var(--primary);
+  background: transparent;
+  border: 1px dashed var(--border-strong);
   color: var(--primary);
   border-radius: 12px;
-  padding: 14px;
-  font-size: 16px;
+  padding: 16px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
   -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
 }
 
-.btn-add-photo:active { background: rgba(0,122,255,0.06); }
+.btn-add-photo:active { background: rgba(232,184,75,0.06); }
 
 .hint {
   font-size: 12px;
@@ -267,20 +279,21 @@
   width: 100%;
   padding: 16px;
   background: var(--primary);
-  color: #fff;
+  color: #000;
   border: none;
   border-radius: 14px;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   font-family: inherit;
   -webkit-tap-highlight-color: transparent;
-  transition: background 0.15s;
+  transition: background 0.15s, opacity 0.15s;
+  letter-spacing: -0.2px;
 }
 
 .btn-primary:hover { background: var(--primary-dark); }
 .btn-primary:active { opacity: 0.85; }
-.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
 .btn-primary.loading { background: var(--primary-dark); }
 
 .btn-done { margin-top: 8px; }
@@ -291,19 +304,9 @@
   background: none;
   border: none;
   color: var(--text-secondary);
-  font-size: 16px;
+  font-size: 15px;
   cursor: pointer;
   font-family: inherit;
-}
-
-/* ── Error message ───────────────────────────────────────────────────────── */
-.error-msg {
-  background: rgba(255,59,48,0.1);
-  color: var(--danger);
-  border-radius: 10px;
-  padding: 12px 14px;
-  font-size: 14px;
-  font-weight: 500;
 }
 
 /* ── Danger button ───────────────────────────────────────────────────────── */
@@ -312,18 +315,30 @@
   padding: 14px;
   margin-top: 24px;
   background: none;
-  border: 1.5px solid var(--danger);
+  border: 1px solid rgba(255,69,58,0.4);
   color: var(--danger);
   border-radius: 14px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
   -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
 }
 
-.btn-danger:active { opacity: 0.6; }
+.btn-danger:active { background: rgba(255,69,58,0.08); }
 .btn-danger:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── Error message ───────────────────────────────────────────────────────── */
+.error-msg {
+  background: rgba(255,69,58,0.12);
+  color: var(--danger);
+  border: 1px solid rgba(255,69,58,0.2);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 500;
+}
 
 /* ── Folder detail view ──────────────────────────────────────────────────── */
 .folder-view .photo-thumb-wrap { cursor: zoom-in; }
@@ -332,7 +347,7 @@
 .lightbox {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.92);
+  background: rgba(0,0,0,0.96);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -343,7 +358,7 @@
 .lightbox-img {
   max-width: 100%;
   max-height: 90dvh;
-  border-radius: 10px;
+  border-radius: 6px;
   object-fit: contain;
 }
 
@@ -351,9 +366,9 @@
   position: absolute;
   top: max(16px, env(safe-area-inset-top));
   right: 16px;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.1);
   color: #fff;
-  border: none;
+  border: 1px solid rgba(255,255,255,0.15);
   border-radius: 50%;
   width: 36px;
   height: 36px;
@@ -362,4 +377,5 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  backdrop-filter: blur(8px);
 }
