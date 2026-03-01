@@ -3,12 +3,12 @@ import { getFirestore } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDmTlYeGThBZCVdq5vVnpWDk-Tpw8qE_iY",
-  authDomain: "photodump-e1fcb.firebaseapp.com",
-  projectId: "photodump-e1fcb",
-  storageBucket: "photodump-e1fcb.firebasestorage.app",
-  messagingSenderId: "928707760074",
-  appId: "1:928707760074:web:409e108d9511b008c70933",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 }
 
 const app = initializeApp(firebaseConfig)
