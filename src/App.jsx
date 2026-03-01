@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import logo from './PDlogo.png'
 import { db, storage } from './firebase'
 import {
@@ -188,6 +188,14 @@ function CreateFolderView({ onDone, onCancel }) {
   const [previews, setPreviews] = useState([])   // { file, url }[]
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const inputRef = useRef(null)
+
+  // Programmatic focus after mount — avoids iOS tap-to-focus failures
+  // that occur intermittently right after a React view transition
+  useEffect(() => {
+    const t = setTimeout(() => inputRef.current?.focus(), 150)
+    return () => clearTimeout(t)
+  }, [])
 
   function handlePhotoChange(e) {
     const files = Array.from(e.target.files)
@@ -250,13 +258,13 @@ function CreateFolderView({ onDone, onCancel }) {
       <div className="field">
         <label className="field-label" htmlFor="folder-title">Folder Name</label>
         <input
+          ref={inputRef}
           id="folder-title"
           className="field-input"
           type="text"
           placeholder="e.g. Summer 2025"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          autoFocus
         />
       </div>
 
