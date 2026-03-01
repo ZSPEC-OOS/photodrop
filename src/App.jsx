@@ -4,6 +4,8 @@ import {
   collection,
   addDoc,
   getDocs,
+  deleteDoc,
+  doc,
   orderBy,
   query,
   serverTimestamp,
@@ -277,7 +279,6 @@ function CreateFolderView({ onDone, onCancel }) {
           <input
             type="file"
             accept="image/*"
-            capture="environment"
             multiple
             onChange={handlePhotoChange}
             style={{ display: 'none' }}
@@ -305,8 +306,23 @@ function CreateFolderView({ onDone, onCancel }) {
 }
 
 // ─── Folder View ──────────────────────────────────────────────────────────────
-function FolderView({ folder }) {
+function FolderView({ folder, onBack }) {
   const [lightbox, setLightbox] = useState(null)
+  const [deleting, setDeleting] = useState(false)
+
+  async function handleDelete() {
+    if (!window.confirm(`Delete "${folder.title}"? This cannot be undone.`)) return
+    setDeleting(true)
+    try {
+      // Deletes the Firestore document; Storage files are orphaned but harmless
+      await deleteDoc(doc(db, 'folders', folder.id))
+      onBack()
+    } catch (err) {
+      console.error('Error deleting folder:', err)
+      alert(`Delete failed: ${err.code || err.message}`)
+      setDeleting(false)
+    }
+  }
 
   return (
     <main className="main folder-view">
@@ -327,6 +343,10 @@ function FolderView({ folder }) {
           </div>
         ))}
       </div>
+
+      <button className="btn-danger" onClick={handleDelete} disabled={deleting}>
+        {deleting ? 'Deleting…' : 'Delete Folder'}
+      </button>
 
       {lightbox && (
         <div className="lightbox" onClick={() => setLightbox(null)}>
