@@ -22,6 +22,10 @@
   position: sticky;
   top: 0;
   z-index: 100;
+  /* Clip the GPU compositing layer to the header's exact bounds.
+     Without this, -webkit-backdrop-filter bleeds past the bottom edge
+     in iOS standalone/PWA mode and silently swallows taps on inputs below. */
+  clip-path: inset(0);
 }
 
 .header-logo {
