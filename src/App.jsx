@@ -225,7 +225,7 @@ function CreateFolderView({ onDone, onCancel }) {
       onDone()
     } catch (err) {
       console.error('Error saving folder:', err)
-      setError('Failed to save. Check your Firebase config and try again.')
+      setError(`Save failed: ${err.code || err.message || 'Unknown error'}`)
     }
     setSaving(false)
   }
