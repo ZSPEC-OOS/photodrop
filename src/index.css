@@ -1,18 +1,21 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:             #000000;
-  --surface:        #111111;
-  --card:           #1a1a1a;
-  --primary:        #e8b84b;
-  --primary-dark:   #c99a2e;
+  --bg:             #030303;
+  --surface:        #0d0d0d;
+  --card:           #111111;
+  --card-hover:     #161616;
+  --primary:        #d4a843;
+  --primary-dark:   #b08930;
+  --primary-glow:   rgba(212,168,67,0.10);
   --danger:         #ff453a;
-  --text:           #ffffff;
-  --text-secondary: #8e8e93;
-  --border:         rgba(255,255,255,0.10);
-  --border-strong:  rgba(255,255,255,0.16);
-  --radius:         14px;
-  --shadow:         0 4px 28px rgba(0,0,0,0.6);
+  --text:           #f0f0f0;
+  --text-secondary: #6e6e73;
+  --border:         rgba(255,255,255,0.06);
+  --border-strong:  rgba(255,255,255,0.11);
+  --radius:         16px;
+  --shadow:         0 8px 32px rgba(0,0,0,0.7);
+  --shadow-sm:      0 2px 12px rgba(0,0,0,0.4);
 }
 
 html, body {
