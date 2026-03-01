@@ -306,6 +306,25 @@
   font-weight: 500;
 }
 
+/* ── Danger button ───────────────────────────────────────────────────────── */
+.btn-danger {
+  width: 100%;
+  padding: 14px;
+  margin-top: 24px;
+  background: none;
+  border: 1.5px solid var(--danger);
+  color: var(--danger);
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-danger:active { opacity: 0.6; }
+.btn-danger:disabled { opacity: 0.4; cursor: not-allowed; }
+
 /* ── Folder detail view ──────────────────────────────────────────────────── */
 .folder-view .photo-thumb-wrap { cursor: zoom-in; }
 
