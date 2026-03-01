@@ -60,6 +60,10 @@ export default function App() {
         showBack={view !== 'home'}
         onBack={goHome}
         onNew={view === 'home' ? () => setView('create') : null}
+        title={
+          view === 'view' && activeFolder ? activeFolder.title :
+          view === 'create' ? 'New Folder' : null
+        }
       />
 
       {view === 'home' && (
@@ -83,7 +87,7 @@ export default function App() {
 }
 
 // ─── Header ───────────────────────────────────────────────────────────────────
-function Header({ showBack, onBack, onNew }) {
+function Header({ showBack, onBack, onNew, title }) {
   return (
     <header className="header">
       <div className="header-left">
@@ -96,7 +100,10 @@ function Header({ showBack, onBack, onNew }) {
           </button>
         )}
       </div>
-      <img src={logo} alt="PhotoDrop" className="header-logo" />
+      {title
+        ? <span className="header-folder-title">{title}</span>
+        : <img src={logo} alt="PhotoDrop" className="header-logo" />
+      }
       <div className="header-right">
         {onNew && (
           <button className="btn-icon" onClick={onNew} aria-label="New folder">
@@ -125,9 +132,14 @@ function HomeView({ folders, loading, onOpenFolder, onNew }) {
   if (folders.length === 0) {
     return (
       <div className="center-msg">
-        <div className="empty-icon">📂</div>
+        <div className="empty-icon">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+            <path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"
+              stroke="rgba(212,168,67,0.55)" strokeWidth="1.5" fill="none"/>
+          </svg>
+        </div>
         <p className="empty-title">No folders yet</p>
-        <p className="empty-sub">Tap <strong>+</strong> to create your first folder</p>
+        <p className="empty-sub">Tap + to create your first folder</p>
         <button className="btn-primary" onClick={onNew}>Create Folder</button>
       </div>
     )
