@@ -188,6 +188,7 @@ function CreateFolderView({ onDone, onCancel }) {
   const [previews, setPreviews] = useState([])   // { file, url }[]
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [cameraOnly, setCameraOnly] = useState(false)
   const inputRef = useRef(null)
 
   // Programmatic focus after mount — avoids iOS tap-to-focus failures
@@ -301,12 +302,22 @@ function CreateFolderView({ onDone, onCancel }) {
             type="file"
             accept="image/*"
             multiple
+            {...(cameraOnly ? { capture: 'environment' } : {})}
             onChange={handlePhotoChange}
             style={{ display: 'none' }}
           />
         </label>
 
-        <p className="hint">Opens camera or photo library on iPhone</p>
+        <label className="camera-only-toggle">
+          <input
+            type="checkbox"
+            checked={cameraOnly}
+            onChange={(e) => setCameraOnly(e.target.checked)}
+          />
+          Camera only (skip picker)
+        </label>
+
+        <p className="hint">{cameraOnly ? 'Opens camera directly' : 'Opens camera or photo library on iPhone'}</p>
       </div>
 
       {error && <p className="error-msg">{error}</p>}

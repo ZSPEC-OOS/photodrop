@@ -339,6 +339,25 @@
   border-color: rgba(212,168,67,0.5);
 }
 
+.camera-only-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.camera-only-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
 .hint {
   font-size: 11px;
   color: var(--text-secondary);
