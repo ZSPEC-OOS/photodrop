@@ -90,29 +90,31 @@ export default function App() {
 function Header({ showBack, onBack, onNew, title }) {
   return (
     <header className="header">
-      <div className="header-left">
-        {showBack && (
-          <button className="btn-icon" onClick={onBack} aria-label="Back">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2.5"
-                strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-        )}
-      </div>
-      {title
-        ? <span className="header-folder-title">{title}</span>
-        : <img src={logo} alt="PhotoDrop" className="header-logo" />
-      }
-      <div className="header-right">
-        {onNew && (
-          <button className="btn-icon" onClick={onNew} aria-label="New folder">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2.5"
-                strokeLinecap="round"/>
-            </svg>
-          </button>
-        )}
+      <div className="header-inner">
+        <div className="header-left">
+          {showBack && (
+            <button className="btn-icon" onClick={onBack} aria-label="Back">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2.5"
+                  strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+          )}
+        </div>
+        {title
+          ? <span className="header-folder-title">{title}</span>
+          : <img src={logo} alt="PhotoDrop" className="header-logo" />
+        }
+        <div className="header-right">
+          {onNew && (
+            <button className="btn-icon" onClick={onNew} aria-label="New folder">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2.5"
+                  strokeLinecap="round"/>
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
     </header>
   )
@@ -225,12 +227,17 @@ function CreateFolderView({ onDone, onCancel }) {
     setSaving(true)
     setError('')
     try {
-      // Upload each photo to Firebase Storage
+      // Upload each photo to Firebase Storage.
+      // crypto.randomUUID() ensures a unique path for every file regardless
+      // of filename (camera apps often reuse "image.jpg") or upload timing,
+      // preventing the same storage path—and therefore duplicate URLs—from
+      // being generated when multiple photos are saved at once.
       const photoUrls = await Promise.all(
         previews.map(async ({ file }) => {
+          const ext = file.name.includes('.') ? file.name.split('.').pop() : 'jpg'
           const storageRef = ref(
             storage,
-            `folders/${Date.now()}_${file.name}`
+            `folders/${crypto.randomUUID()}.${ext}`
           )
           await uploadBytes(storageRef, file)
           return getDownloadURL(storageRef)
