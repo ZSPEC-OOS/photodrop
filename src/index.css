@@ -1,21 +1,21 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:             #030303;
-  --surface:        #0d0d0d;
-  --card:           #111111;
-  --card-hover:     #161616;
-  --primary:        #d4a843;
-  --primary-dark:   #b08930;
-  --primary-glow:   rgba(212,168,67,0.10);
+  --bg:             #040404;
+  --surface:        #0a0a0a;
+  --card:           #0f0f0f;
+  --card-hover:     #151515;
+  --primary:        #e8193a;
+  --primary-dark:   #c01030;
+  --primary-glow:   rgba(232,25,58,0.10);
   --danger:         #ff453a;
   --text:           #f0f0f0;
-  --text-secondary: #6e6e73;
-  --border:         rgba(255,255,255,0.06);
-  --border-strong:  rgba(255,255,255,0.11);
+  --text-secondary: #6b6b70;
+  --border:         rgba(232,25,58,0.09);
+  --border-strong:  rgba(232,25,58,0.20);
   --radius:         16px;
-  --shadow:         0 8px 32px rgba(0,0,0,0.7);
-  --shadow-sm:      0 2px 12px rgba(0,0,0,0.4);
+  --shadow:         0 8px 32px rgba(0,0,0,0.75);
+  --shadow-sm:      0 2px 12px rgba(232,25,58,0.07);
 }
 
 html, body {
