@@ -347,20 +347,23 @@ function CreateFolderView({ onDone, onCancel }) {
 // ─── Folder View ──────────────────────────────────────────────────────────────
 function FolderView({ folder, onBack }) {
   const [lightbox, setLightbox] = useState(null)
-  // Map of { [photoUrl]: rotationDegrees } so orientation persists across open/close
-  const [rotations, setRotations] = useState({})
+  // Seed from localStorage so rotation survives refresh and lightbox close
+  const [rotations, setRotations] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('photodrop_rotations') || '{}') }
+    catch { return {} }
+  })
   const [deleting, setDeleting] = useState(false)
 
   function openLightbox(url) {
     setLightbox(url)
-    // Do NOT reset rotation — user's chosen orientation is preserved
   }
 
   function rotateActive() {
-    setRotations((prev) => ({
-      ...prev,
-      [lightbox]: ((prev[lightbox] ?? 0) + 90) % 360,
-    }))
+    setRotations((prev) => {
+      const next = { ...prev, [lightbox]: ((prev[lightbox] ?? 0) + 90) % 360 }
+      localStorage.setItem('photodrop_rotations', JSON.stringify(next))
+      return next
+    })
   }
 
   async function handleDelete() {
@@ -392,7 +395,12 @@ function FolderView({ folder, onBack }) {
       <div className="photo-grid">
         {folder.photos?.map((url, i) => (
           <div key={i} className="photo-thumb-wrap" onClick={() => openLightbox(url)}>
-            <img src={url} alt={`${folder.title} ${i + 1}`} className="photo-thumb" />
+            <img
+              src={url}
+              alt={`${folder.title} ${i + 1}`}
+              className="photo-thumb"
+              style={{ transform: `rotate(${rotations[url] ?? 0}deg)` }}
+            />
           </div>
         ))}
       </div>
