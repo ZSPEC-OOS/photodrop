@@ -490,6 +490,7 @@
   border-radius: 8px;
   object-fit: contain;
   box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .lightbox-close {
@@ -513,6 +514,40 @@
 
 .lightbox-close:hover { background: rgba(255,255,255,0.14); }
 .lightbox-close:active { background: rgba(255,255,255,0.15); }
+
+.lightbox-rotate {
+  position: absolute;
+  bottom: max(36px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(20,20,20,0.82);
+  color: rgba(255,255,255,0.88);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 30px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+  /* translateX is set inline; we don't want hover to override it entirely */
+}
+
+.lightbox-rotate:hover {
+  background: rgba(212,168,67,0.18);
+  border-color: rgba(212,168,67,0.45);
+}
+
+.lightbox-rotate:active {
+  background: rgba(212,168,67,0.26);
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    RESPONSIVE — Tablet  (≥ 640px)

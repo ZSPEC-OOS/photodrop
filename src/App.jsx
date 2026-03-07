@@ -347,7 +347,13 @@ function CreateFolderView({ onDone, onCancel }) {
 // ─── Folder View ──────────────────────────────────────────────────────────────
 function FolderView({ folder, onBack }) {
   const [lightbox, setLightbox] = useState(null)
+  const [rotation, setRotation] = useState(0)
   const [deleting, setDeleting] = useState(false)
+
+  function openLightbox(url) {
+    setLightbox(url)
+    setRotation(0)          // always start unrotated for each photo
+  }
 
   async function handleDelete() {
     if (!window.confirm(`Delete "${folder.title}"? This cannot be undone.`)) return
@@ -377,7 +383,7 @@ function FolderView({ folder, onBack }) {
 
       <div className="photo-grid">
         {folder.photos?.map((url, i) => (
-          <div key={i} className="photo-thumb-wrap" onClick={() => setLightbox(url)}>
+          <div key={i} className="photo-thumb-wrap" onClick={() => openLightbox(url)}>
             <img src={url} alt={`${folder.title} ${i + 1}`} className="photo-thumb" />
           </div>
         ))}
@@ -389,8 +395,33 @@ function FolderView({ folder, onBack }) {
 
       {lightbox && (
         <div className="lightbox" onClick={() => setLightbox(null)}>
-          <img src={lightbox} alt="Full size" className="lightbox-img" />
-          <button className="lightbox-close">×</button>
+          {/* Stop propagation on inner content so clicks don't close lightbox */}
+          <img
+            src={lightbox}
+            alt="Full size"
+            className="lightbox-img"
+            style={{ transform: `rotate(${rotation}deg)` }}
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button
+            className="lightbox-rotate"
+            onClick={(e) => { e.stopPropagation(); setRotation((r) => (r + 90) % 360) }}
+            aria-label="Rotate clockwise"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M21 2v6h-6" stroke="currentColor" strokeWidth="2.2"
+                strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M21 8A9 9 0 1 0 18.36 18.36" stroke="currentColor" strokeWidth="2.2"
+                strokeLinecap="round"/>
+            </svg>
+            Rotate
+          </button>
+          <button
+            className="lightbox-close"
+            onClick={(e) => { e.stopPropagation(); setLightbox(null) }}
+          >
+            ×
+          </button>
         </div>
       )}
     </main>
