@@ -347,12 +347,20 @@ function CreateFolderView({ onDone, onCancel }) {
 // ─── Folder View ──────────────────────────────────────────────────────────────
 function FolderView({ folder, onBack }) {
   const [lightbox, setLightbox] = useState(null)
-  const [rotation, setRotation] = useState(0)
+  // Map of { [photoUrl]: rotationDegrees } so orientation persists across open/close
+  const [rotations, setRotations] = useState({})
   const [deleting, setDeleting] = useState(false)
 
   function openLightbox(url) {
     setLightbox(url)
-    setRotation(0)          // always start unrotated for each photo
+    // Do NOT reset rotation — user's chosen orientation is preserved
+  }
+
+  function rotateActive() {
+    setRotations((prev) => ({
+      ...prev,
+      [lightbox]: ((prev[lightbox] ?? 0) + 90) % 360,
+    }))
   }
 
   async function handleDelete() {
@@ -400,12 +408,12 @@ function FolderView({ folder, onBack }) {
             src={lightbox}
             alt="Full size"
             className="lightbox-img"
-            style={{ transform: `rotate(${rotation}deg)` }}
+            style={{ transform: `rotate(${rotations[lightbox] ?? 0}deg)` }}
             onClick={(e) => e.stopPropagation()}
           />
           <button
             className="lightbox-rotate"
-            onClick={(e) => { e.stopPropagation(); setRotation((r) => (r + 90) % 360) }}
+            onClick={(e) => { e.stopPropagation(); rotateActive() }}
             aria-label="Rotate clockwise"
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
