@@ -51,12 +51,18 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'Folder not found' })
     }
 
+    // Route photo URLs through our image proxy so WolfKrow's browser can fetch
+    // them cross-origin (Firebase Storage has no CORS headers for external origins).
+    const origin = `https://${req.headers.host}`
+    const proxyUrl = (storageUrl) =>
+      `${origin}/api/picker/image?url=${encodeURIComponent(storageUrl)}`
+
     const data = docSnap.data()
     const photos = (data.photos || []).map((url, i) => ({
       id: String(i),
       name: nameFromUrl(url),
-      url,
-      thumbnailUrl: url,
+      url: proxyUrl(url),
+      thumbnailUrl: proxyUrl(url),
       mimeType: mimeFromUrl(url),
     }))
 
