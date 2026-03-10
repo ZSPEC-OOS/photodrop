@@ -19,11 +19,28 @@ import './App.css'
 // 'create' → new-folder screen (name + pick photos)
 // 'view'   → view a saved folder's photos
 
+// ─── Picker mode ──────────────────────────────────────────────────────────────
+// When opened with ?picker in the URL, the app enters picker mode.
+// Clicking a folder sends all its photos to the opener via postMessage and
+// closes the window instead of navigating into the folder.
+const isPickerMode = new URLSearchParams(window.location.search).has('picker')
+
+async function urlToBase64(url) {
+  const res = await fetch(url, { credentials: 'include' })
+  const blob = await res.blob()
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+    reader.onloadend = () => resolve({ data: reader.result.split(',')[1], mimeType: blob.type })
+    reader.readAsDataURL(blob)
+  })
+}
+
 export default function App() {
   const [view, setView] = useState('home')
   const [folders, setFolders] = useState([])
   const [activeFolder, setActiveFolder] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [pickerSending, setPickerSending] = useState(false)
 
   // Fetch all folders from Firestore on mount
   useEffect(() => {
@@ -54,32 +71,65 @@ export default function App() {
     fetchFolders()
   }
 
+  async function handlePickerFolderClick(folder) {
+    setPickerSending(true)
+    try {
+      const photos = await Promise.all(
+        (folder.photos || []).map(async (url) => {
+          const { data, mimeType } = await urlToBase64(url)
+          const name = decodeURIComponent(url.split('/').pop().split('?')[0]) || 'photo.jpg'
+          return { name, data, mimeType }
+        })
+      )
+      window.opener?.postMessage({ type: 'photodrop:photos', photos }, '*')
+      window.close()
+    } catch (err) {
+      console.error('Picker error:', err)
+      setPickerSending(false)
+    }
+  }
+
   return (
     <div className="app">
+      {isPickerMode && (
+        <div className="picker-banner">
+          <span>📷 WrkFlow Picker Mode — click a folder to send its photos to WrkFlow</span>
+          <button className="picker-banner-cancel" onClick={() => window.close()}>Cancel</button>
+        </div>
+      )}
+
       <Header
         showBack={view !== 'home'}
         onBack={goHome}
-        onNew={view === 'home' ? () => setView('create') : null}
+        onNew={!isPickerMode && view === 'home' ? () => setView('create') : null}
         title={
           view === 'view' && activeFolder ? activeFolder.title :
           view === 'create' ? 'New Folder' : null
         }
       />
 
+      {pickerSending && (
+        <div className="picker-sending-overlay">
+          <div className="spinner" />
+          <p>Sending photos…</p>
+        </div>
+      )}
+
       {view === 'home' && (
         <HomeView
           folders={folders}
           loading={loading}
-          onOpenFolder={openFolder}
-          onNew={() => setView('create')}
+          onOpenFolder={isPickerMode ? handlePickerFolderClick : openFolder}
+          onNew={isPickerMode ? null : () => setView('create')}
+          isPickerMode={isPickerMode}
         />
       )}
 
-      {view === 'create' && (
+      {!isPickerMode && view === 'create' && (
         <CreateFolderView onDone={goHome} onCancel={goHome} />
       )}
 
-      {view === 'view' && activeFolder && (
+      {!isPickerMode && view === 'view' && activeFolder && (
         <FolderView folder={activeFolder} onBack={goHome} />
       )}
     </div>
@@ -121,7 +171,7 @@ function Header({ showBack, onBack, onNew, title }) {
 }
 
 // ─── Home View ────────────────────────────────────────────────────────────────
-function HomeView({ folders, loading, onOpenFolder, onNew }) {
+function HomeView({ folders, loading, onOpenFolder, onNew, isPickerMode }) {
   if (loading) {
     return (
       <div className="center-msg">
@@ -141,8 +191,8 @@ function HomeView({ folders, loading, onOpenFolder, onNew }) {
           </svg>
         </div>
         <p className="empty-title">No folders yet</p>
-        <p className="empty-sub">Tap + to create your first folder</p>
-        <button className="btn-primary" onClick={onNew}>Create Folder</button>
+        {!isPickerMode && <p className="empty-sub">Tap + to create your first folder</p>}
+        {!isPickerMode && <button className="btn-primary" onClick={onNew}>Create Folder</button>}
       </div>
     )
   }
@@ -152,7 +202,12 @@ function HomeView({ folders, loading, onOpenFolder, onNew }) {
       <p className="section-label">{folders.length} folder{folders.length !== 1 ? 's' : ''}</p>
       <div className="folder-grid">
         {folders.map((folder) => (
-          <FolderCard key={folder.id} folder={folder} onClick={() => onOpenFolder(folder)} />
+          <FolderCard
+            key={folder.id}
+            folder={folder}
+            onClick={() => onOpenFolder(folder)}
+            pickerMode={isPickerMode}
+          />
         ))}
       </div>
     </main>
@@ -160,12 +215,12 @@ function HomeView({ folders, loading, onOpenFolder, onNew }) {
 }
 
 // ─── Folder Card ──────────────────────────────────────────────────────────────
-function FolderCard({ folder, onClick }) {
+function FolderCard({ folder, onClick, pickerMode }) {
   const cover = folder.photos?.[0] || null
   const count = folder.photos?.length || 0
 
   return (
-    <button className="folder-card" onClick={onClick}>
+    <button className={`folder-card${pickerMode ? ' folder-card--picker' : ''}`} onClick={onClick}>
       <div className="folder-thumb">
         {cover ? (
           <img src={cover} alt={folder.title} className="folder-cover" />
