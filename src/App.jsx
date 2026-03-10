@@ -76,7 +76,8 @@ export default function App() {
     try {
       const photos = await Promise.all(
         (folder.photos || []).map(async (url) => {
-          const { data, mimeType } = await urlToBase64(url)
+          const proxyUrl = `/api/picker/image?url=${encodeURIComponent(url)}`
+          const { data, mimeType } = await urlToBase64(proxyUrl)
           const name = decodeURIComponent(url.split('/').pop().split('?')[0]) || 'photo.jpg'
           return { name, data, mimeType }
         })
