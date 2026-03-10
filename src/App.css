@@ -1,3 +1,68 @@
+/* ── Picker mode ─────────────────────────────────────────────────────────── */
+.picker-banner {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #1a6fdb;
+  color: #fff;
+  padding: 10px 16px;
+  padding-top: max(10px, env(safe-area-inset-top));
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.picker-banner-cancel {
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.35);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.picker-banner-cancel:hover { background: rgba(255,255,255,0.28); }
+.picker-banner-cancel:active { background: rgba(255,255,255,0.35); }
+
+.folder-card--picker {
+  border-color: #1a6fdb;
+  box-shadow: 0 0 0 2px rgba(26,111,219,0.30);
+}
+
+.folder-card--picker:hover {
+  border-color: #2882f5;
+  box-shadow: 0 0 0 3px rgba(26,111,219,0.45), 0 12px 40px rgba(0,0,0,0.75);
+}
+
+.folder-card--picker:active {
+  border-color: #2882f5;
+}
+
+.picker-sending-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 500;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+}
+
 /* ── App shell ──────────────────────────────────────────────────────────── */
 .app {
   display: flex;
