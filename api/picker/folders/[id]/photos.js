@@ -1,19 +1,32 @@
-import { initializeApp, getApps } from 'firebase/app'
-import { getFirestore, doc, getDoc } from 'firebase/firestore'
-
-const firebaseConfig = {
-  apiKey: 'AIzaSyDmTlYeGThBZCVdq5vVnpWDk-Tpw8qE_iY',
-  projectId: 'photodump-e1fcb',
-}
-
-if (!getApps().length) initializeApp(firebaseConfig)
-const db = getFirestore()
+const PROJECT_ID = 'photodump-e1fcb'
+const API_KEY = 'AIzaSyDmTlYeGThBZCVdq5vVnpWDk-Tpw8qE_iY'
+const FIRESTORE_BASE = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents`
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': 'https://wolfkrow.onrender.com',
   'Access-Control-Allow-Credentials': 'true',
   'Access-Control-Allow-Methods': 'GET, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
+}
+
+function parseField(field) {
+  if ('stringValue' in field) return field.stringValue
+  if ('integerValue' in field) return Number(field.integerValue)
+  if ('booleanValue' in field) return field.booleanValue
+  if ('timestampValue' in field) return field.timestampValue
+  if ('arrayValue' in field) return (field.arrayValue.values || []).map(parseField)
+  if ('mapValue' in field) {
+    const out = {}
+    for (const [k, v] of Object.entries(field.mapValue.fields || {})) out[k] = parseField(v)
+    return out
+  }
+  return null
+}
+
+function parseDoc(firestoreDoc) {
+  const out = {}
+  for (const [k, v] of Object.entries(firestoreDoc.fields || {})) out[k] = parseField(v)
+  return out
 }
 
 // Extract the decoded filename from a Firebase Storage download URL.
@@ -45,20 +58,27 @@ export default async function handler(req, res) {
 
   try {
     const { id } = req.query
-    const docSnap = await getDoc(doc(db, 'folders', id))
+    const docUrl = `${FIRESTORE_BASE}/folders/${id}?key=${API_KEY}`
+    const raw = await fetch(docUrl)
 
-    if (!docSnap.exists()) {
-      return res.status(404).json({ error: 'Folder not found' })
+    if (raw.status === 404) return res.status(404).json({ error: 'Folder not found' })
+
+    if (!raw.ok) {
+      const text = await raw.text()
+      console.error('Firestore fetch failed:', text)
+      return res.status(502).json({ error: 'Failed to fetch from Firestore' })
     }
 
-    // Route photo URLs through our image proxy so WolfKrow's browser can fetch
-    // them cross-origin (Firebase Storage has no CORS headers for external origins).
+    const firestoreDoc = await raw.json()
+    const data = parseDoc(firestoreDoc)
+
+    // Route Firebase Storage URLs through our image proxy so WolfKrow's
+    // browser can fetch them cross-origin.
     const origin = `https://${req.headers.host}`
     const proxyUrl = (storageUrl) =>
       `${origin}/api/picker/image?url=${encodeURIComponent(storageUrl)}`
 
-    const data = docSnap.data()
-    const photos = (data.photos || []).map((url, i) => ({
+    const photos = (Array.isArray(data.photos) ? data.photos : []).map((url, i) => ({
       id: String(i),
       name: nameFromUrl(url),
       url: proxyUrl(url),
